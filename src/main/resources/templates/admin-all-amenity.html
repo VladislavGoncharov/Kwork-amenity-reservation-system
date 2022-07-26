@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Admin, all amenities</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+</head>
+<body>
+
+<div>
+    <div th:insert="fragments/nav :: nav"></div>
+    <div class="container" style="padding-top: 10vh; display: flex; flex-direction: column; align-items: center;">
+        <form action="#" th:action="@{/admin/amenities/save-amenity}" th:object="${newAmenityType}" method="post"
+              enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{urlPhoto}">
+            <table class="table text-center">
+                <thead>
+                <tr th:if="${error!=null}">
+                    <th class="alert alert-danger" role="alert" th:text="${error}" colspan="2"></th>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        Add new amenity
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        <input type="text" th:field="*{amenityName}">
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        Capacity
+                    </th>
+                    <th>
+                        <input type="text" th:field="*{capacity}">
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        Photo
+                    </th>
+                    <th>
+                        <input class="form-control-file btn-primary" type="file" th:name="photoAmenity">
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <button class="btn btn-secondary" type="reset">Reset</button>
+                    </th>
+                    <th>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </th>
+                </tr>
+                </thead>
+            </table>
+        </form>
+        <table class="table text-center">
+            <thead>
+            <tr>
+                <th scope="col">№</th>
+                <th scope="col">Name amenity</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Image</th>
+                <th scope="col">Option</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="amenity,stat : ${allAmenityType}">
+                <td th:text="${stat.count}"></td>
+                <td th:text="${amenity.amenityName}"></td>
+                <td th:text="${amenity.capacity}"></td>
+                <td><img style="width: 4rem" th:src="${amenity.urlPhoto}" th:alt="${amenity.amenityName}"></td>
+                <td>
+                    <button class="btn btn-warning" type="button"
+                            th:onclick="|window.location.href='/admin/amenities/update-amenity-${amenity.getId}'|"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </button>
+                    <button class="btn btn-danger" type="button"
+                            th:onclick="|window.location.href='/admin/amenities/delete-amenity-${amenity.getId}'|">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-eraser" viewBox="0 0 16 16">
+                            <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414l-3.879-3.879zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/1.12.9-1/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.0.0-2/js/bootstrap.min.js}"></script>
+
+</body>
+</html>

@@ -1,49 +1,26 @@
 package com.amenity_reservation_system.service;
 
-import com.amenity_reservation_system.model.Reservation;
-import com.amenity_reservation_system.model.User;
-import com.amenity_reservation_system.repos.UserRepository;
+import com.amenity_reservation_system.dto.UserDTO;
+import com.amenity_reservation_system.entity.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import javax.validation.ValidationException;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+public interface UserService extends UserDetailsService {
 
+    List<UserDTO> findAll();
 
-@Service
-public class UserService {
+    User findFirstByUsername(String name);
 
-    private final UserRepository userRepository;
+    void save(UserDTO userDTO) throws ValidationException;
 
-    public UserService(final UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    void deleteById(Long id);
 
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
+    UserDTO getById(Long id);
 
-    public User get(final Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+    boolean checkUsername(String username);
 
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username);
-    }
+    boolean checkUsername(String username, Long id);
 
-    public Long create(final User user) {
-        return userRepository.save(user).getId();
-    }
-
-    public void update(final Long id, final User user) {
-        final User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        userRepository.save(user);
-    }
-
-    public void delete(final Long id) {
-        userRepository.deleteById(id);
-    }
 }

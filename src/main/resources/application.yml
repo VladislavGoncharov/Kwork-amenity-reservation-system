@@ -1,3 +1,5 @@
+
+
 spring:
   datasource:
     url: ${JDBC_DATABASE_URL:jdbc:h2:mem:amenity-reservation-system}
@@ -24,5 +26,10 @@ spring:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 5MB
+
 springdoc:
   pathsToMatch: /api/**

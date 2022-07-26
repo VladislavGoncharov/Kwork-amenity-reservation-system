@@ -27,3 +27,21 @@ development process and technical decisions has been explained in this tutorial:
 * Users should be able to create new reservations by selecting the amenity type, date, and time.
 * Only logged-in users should be able to see the reservations page and create reservations.
 * We should check the capacity and only create new reservations if the current number of reservations does not exceed the capacity.
+------------------------------------------------------------------------------------------------------------------------
+## Tasks
+1. Convert/modify the code for convenience
+
+2. User section:
+- Get a list of all amenities with a list on the screen (image, number of available "places");
+- Create/edit/delete reservations;
+- Withdrawal of all available time slots for Convenience when reserving;
+
+3. Admin panel:
+- Adding an administrator user initially in the code;
+- Deleting, editing reservations;
+- Create/edit/delete users;
+- Create/edit/delete Amenities.
+
+## Developer
+Vladislav Goncharov worked on changing the project.
+contact email address veyvik87@gmail.com

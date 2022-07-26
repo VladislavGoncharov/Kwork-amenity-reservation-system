@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Update reservation</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+</head>
+<body>
+<div th:insert="fragments/nav :: nav"></div>
+<div class="container" style="padding-top: 10vh; display: flex; flex-direction: column; align-items: center;">
+    <div class="modal-body">
+        <p class="form-group alert alert-danger text-center" role="alert" th:if="${error}" th:text="${error}"></p>
+        <!--/*@thymesVar id="reservationDTO" type="com.amenity_reservation_system.dto.ReservationDTO"*/-->
+        <form action="#" th:action="@{/admin/update-success}" th:object="${dateAndTime}" method="post">
+            <div class="form-group row">
+                <label for="start-date" class="col-2 col-form-label">Date</label>
+                <div class="col-10">
+                    <input class="form-control" type="date" id="start-date" name="trip-start"
+                           th:field="*{reservationDate}"
+                           value="2018-07-22">
+                </div>
+            </div>
+            <!--/*@thymesVar id="e" type="com.amenity_reservation_system.entity.BookingTimeEnum"*/-->
+            <div th:each="currentDate,state : ${weekList}">
+                <div th:id="${'time_block_input_' + state.count}" style="display: block">
+                    <div class="form-group row">
+                        <label for="start-time" class="col-2 col-form-label">From</label>
+                        <div class="col-10">
+                            <select class="form-control" id="start-time" th:field="*{startTime}">
+                                <option value=""></option>
+                                <option th:each="time : ${T(com.amenity_reservation_system.entity.BookingTimeEnum).startList(currentDate)}"
+                                        th:value="${time.getTime()}"
+                                        th:utext="${time.getTime()}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="end-time" class="col-2 col-form-label">To</label>
+                        <div class="col-10">
+                            <select class="form-control" id="end-time" th:field="*{endTime}">
+                                <option value=""></option>
+                                <option th:each="time : ${T(com.amenity_reservation_system.entity.BookingTimeEnum).endList(currentDate)}"
+                                        th:value="${time.getTime()}"
+                                        th:utext="${time.getTime()}"></option>
+                            </select>
+                            <small>Amenities are available from 8 am to 8 pm</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" class="btn btn-secondary" onclick="history.back();return false;"> Back</button>
+                <button type="submit" class="btn btn-primary" value="Submit">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    let date = document.getElementById("start-date");
+    date.value = new Date().toISOString().split('T')[0];
+    date.setAttribute("min", new Date().toISOString().split('T')[0]);
+    date.setAttribute("max", new Date(new Date().getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    function hiding_cycle(startNumber) {
+        for (let i = startNumber; i < 8; i++) {
+            document.getElementById("time_block_input_" + i).style.display = "none";
+        }
+    }
+
+    hiding_cycle(2);
+
+    date.addEventListener("input", function () {
+        let dateNow = new Date();
+        let mapDate = new Map();
+        for (let i = 1; i < 8; i++) {
+            mapDate.set(dateNow.getDate(), i);
+            dateNow.setDate(dateNow.getDate() + 1);
+        }
+        hiding_cycle(1);
+        document.getElementById("time_block_input_" + mapDate.get(new Date(date.value).getDate()))
+            .style.display = "block";
+
+    })
+</script>
+<script th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/1.12.9-1/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.0.0-2/js/bootstrap.min.js}"></script>
+
+</body>
+</html>
