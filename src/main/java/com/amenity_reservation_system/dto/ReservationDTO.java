@@ -28,13 +28,21 @@ public class ReservationDTO {
     private User user;
     private AmenityType amenityType;
 
+
     public ReservationDTO(User user, AmenityType amenityType) {
         this.user = user;
         this.amenityType = amenityType;
     }
-    public ReservationDTO(Long id,AmenityType amenityType) {
+
+    public ReservationDTO(Long id, AmenityType amenityType) {
         this.id = id;
         this.amenityType = amenityType;
     }
 
+    // Стиль строчек со старыми бронированием
+    public String isBookingOld() {
+        if (reservationDate.isAfter(LocalDate.now().minusDays(1)))
+            return "";
+        return "table-light text-secondary";
+    }
 }

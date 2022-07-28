@@ -58,7 +58,37 @@ public class UploadDataToDB {
 
             reservationRepository.save(Reservation.builder()
                     .amenityType(amenityTypeRepository.findFirstByAmenityName("SAUNA"))
+                    .reservationDate(LocalDate.now().minusDays(2))
+                    .startTime(LocalTime.of(8, 0))
+                    .endTime(LocalTime.of(10, 30))
+                    .user(userRepository.findFirstByUsername("vlad"))
+                    .build());
+
+            reservationRepository.save(Reservation.builder()
+                    .amenityType(amenityTypeRepository.findFirstByAmenityName("SAUNA"))
+                    .reservationDate(LocalDate.now().minusDays(1))
+                    .startTime(LocalTime.of(8, 0))
+                    .endTime(LocalTime.of(10, 30))
+                    .user(userRepository.findFirstByUsername("vlad"))
+                    .build());
+
+            reservationRepository.save(Reservation.builder()
+                    .amenityType(amenityTypeRepository.findFirstByAmenityName("SAUNA"))
                     .reservationDate(LocalDate.now())
+                    .startTime(LocalTime.of(8, 0))
+                    .endTime(LocalTime.of(10, 30))
+                    .user(userRepository.findFirstByUsername("vlad"))
+                    .build());
+            reservationRepository.save(Reservation.builder()
+                    .amenityType(amenityTypeRepository.findFirstByAmenityName("SAUNA"))
+                    .reservationDate(LocalDate.now().plusDays(1))
+                    .startTime(LocalTime.of(8, 0))
+                    .endTime(LocalTime.of(10, 30))
+                    .user(userRepository.findFirstByUsername("vlad"))
+                    .build());
+            reservationRepository.save(Reservation.builder()
+                    .amenityType(amenityTypeRepository.findFirstByAmenityName("SAUNA"))
+                    .reservationDate(LocalDate.now().plusDays(2))
                     .startTime(LocalTime.of(8, 0))
                     .endTime(LocalTime.of(10, 30))
                     .user(userRepository.findFirstByUsername("vlad"))

@@ -79,15 +79,27 @@ public class UserServiceImpl implements UserService {
         if (!Objects.equals(userDTO.getPassword(), userDTO.getMatchingPassword()))
             throw new ValidationException("Passwords don't match");
 
-        if (userDTO.getId()!=null) // При изменении дата создания сохраняется
+        if (userDTO.getEmail().isEmpty()) userDTO.setEmail(null);
+
+        if (userDTO.getId()!=null) // При изменении дата создания и пароль сохраняется
             userDTO.setDateCreated(userRepository.getOne(userDTO.getId()).getDateCreated());
 
-        userRepository.save(User.builder()
+        if (userDTO.getId()!=null && userDTO.getPassword().startsWith("$2a"))
+            userRepository.save(User.builder()
+                    .id(userDTO.getId())
+                    .username(userDTO.getUsername())
+                    .password(userDTO.getPassword())
+                    .fullName(userDTO.getFullName())
+                    .dateCreated(userDTO.getDateCreated())
+                    .email(userDTO.getEmail())
+                    .build());
+        else userRepository.save(User.builder()
                 .id(userDTO.getId())
                 .username(userDTO.getUsername())
                 .password(new BCryptPasswordEncoder().encode(userDTO.getPassword()))
                 .fullName(userDTO.getFullName())
                 .dateCreated(userDTO.getDateCreated())
+                .email(userDTO.getEmail())
                 .build());
     }
 
@@ -111,31 +123,13 @@ public class UserServiceImpl implements UserService {
                 .matchingPassword(user.getPassword())
                 .fullName(user.getFullName())
                 .dateCreated(user.getDateCreated())
+                .email(user.getEmail())
                 .build();
     }
 
+    @Override
     public List<UserDTO> findAll() {
         return MAPPER.fromUserList(userRepository.findAll());
-    }
-
-    public User get(final Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    public User getUserByUsername(String username) {
-        return userRepository.findFirstByUsername(username);
-    }
-
-    public Long create(final User user) {
-        return userRepository.save(user).getId();
-    }
-
-    public void update(final Long id, final User user) {
-        final User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        userRepository.save(user);
     }
 
 }

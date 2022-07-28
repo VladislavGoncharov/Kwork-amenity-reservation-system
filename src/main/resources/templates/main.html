@@ -33,7 +33,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="reservation : ${user.reservations}">
+            <tr th:each="reservation : ${user.sortReservation()}" th:class="${reservation.isBookingOld()}" >
                 <td th:text="${reservation.getAmenityType().amenityName}"></td>
                 <td th:text="${reservation.getReservationDate()}"></td>
                 <td th:text="${reservation.getStartTime()}"></td>

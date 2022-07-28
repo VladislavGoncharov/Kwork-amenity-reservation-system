@@ -17,4 +17,6 @@ public interface ReservationService {
     void update(Long id, ChooseDateAndTime chooseDateAndTime);
 
     void deleteById(Long id);
+
+    void updateCheckIn(Long id);
 }

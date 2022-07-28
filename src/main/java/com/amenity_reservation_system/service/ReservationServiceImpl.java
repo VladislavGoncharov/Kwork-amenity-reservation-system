@@ -8,12 +8,15 @@ import com.amenity_reservation_system.dto.ReservationDTO;
 import com.amenity_reservation_system.entity.Reservation;
 import com.amenity_reservation_system.entity.User;
 import com.amenity_reservation_system.mapper.ReservationMapper;
+import com.amenity_reservation_system.util.EmailSenderService;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -22,11 +25,13 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationMapper MAPPER = ReservationMapper.MAPPER;
 
+    private final JavaMailSender mailSender;
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final AmenityTypeRepository amenityTypeRepository;
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository, UserRepository userRepository, AmenityTypeRepository amenityTypeRepository) {
+    public ReservationServiceImpl(JavaMailSender mailSender, ReservationRepository reservationRepository, UserRepository userRepository, AmenityTypeRepository amenityTypeRepository) {
+        this.mailSender = mailSender;
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.amenityTypeRepository = amenityTypeRepository;
@@ -34,7 +39,13 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationDTO> findAll() {
-        return MAPPER.fromReservationList(reservationRepository.findAll());
+        return MAPPER.fromReservationList(
+                reservationRepository.findAll().stream()
+                        .sorted((o1, o2) -> {
+                            if (o1.getReservationDate().isBefore(o2.getReservationDate())) return 1;
+                            return -1;
+                        })
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -54,31 +65,41 @@ public class ReservationServiceImpl implements ReservationService {
                         reservationDTO,
                         amenityTypeRepository.findFirstByAmenityName(reservationDTO.getAmenityType().getAmenityName()));
 
-        reservationRepository.save(reservation);
-
-        User user = reservation.getUser();
-        user.addReservation(reservation);
-        userRepository.save(user);
+        saveOrUpdateReservation(reservation);
     }
 
     @Override
     public void update(Long id, ChooseDateAndTime chooseDateAndTime) {
-        System.out.println("update");
         Reservation reservation = reservationRepository.getOne(id);
         reservation.setReservationDate(chooseDateAndTime.getReservationDate());
         reservation.setStartTime(chooseDateAndTime.getStartLocalTime());
         reservation.setEndTime(chooseDateAndTime.getEndLocalTime());
 
+        saveOrUpdateReservation(reservation);
+    }
+    private void saveOrUpdateReservation(Reservation reservation){
         reservationRepository.save(reservation);
 
         User user = reservation.getUser();
         user.addReservation(reservation);
         userRepository.save(user);
+        if (user.getEmail() != null) {
+            Thread thread = new Thread(new EmailSenderService(mailSender, user.getEmail(), reservation));
+            thread.start();
+        }
     }
 
     @Override
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    @Override
+    public void updateCheckIn(Long id) {
+        Reservation reservation = reservationRepository.getOne(id);
+        User user = userRepository.getOne(reservation.getUser().getId());
+        user.setCheckIn(!user.isCheckIn());
+        userRepository.save(user);
     }
 
 }

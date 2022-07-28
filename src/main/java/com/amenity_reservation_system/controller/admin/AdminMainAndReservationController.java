@@ -48,6 +48,13 @@ public class AdminMainAndReservationController {
 
     }
 
+    @RequestMapping("update-reservation-check-in-{id}")
+    public String updateReservationCheckIn(@PathVariable Long id) {
+        reservationService.updateCheckIn(id);
+        return "redirect:/admin";
+
+    }
+
     @GetMapping("/update-error")
     public String updateAmenitiesError(Model model, HttpServletRequest httpServletRequest) {
 

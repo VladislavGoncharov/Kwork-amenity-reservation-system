@@ -55,6 +55,14 @@
                 </tr>
                 <tr>
                     <th>
+                        Email
+                    </th>
+                    <th>
+                        <input type="email" th:field="*{email}">
+                    </th>
+                </tr>
+                <tr>
+                    <th>
                         <button class="btn btn-secondary" type="reset">Reset</button>
                     </th>
                     <th>
@@ -71,6 +79,7 @@
                 <th scope="col">User Name</th>
                 <th scope="col">Full Name</th>
                 <th scope="col">Date Created</th>
+                <th scope="col">Email</th>
                 <th scope="col">Option</th>
             </tr>
             </thead>
@@ -80,6 +89,10 @@
                 <td th:text="${user.username}"></td>
                 <td th:text="${user.fullName}"></td>
                 <td th:text="${user.getFormatDateCreated()}"></td>
+                <td th:switch="${user.getEmail()}">
+                        <div th:case="null">email no</div>
+                        <div th:case="*" th:text="${user.getEmail()}"></div>
+                </td>
                 <td>
                     <button class="btn btn-warning" type="button"
                             th:onclick="|window.location.href='/admin/users/update-user-${user.getId}'|"

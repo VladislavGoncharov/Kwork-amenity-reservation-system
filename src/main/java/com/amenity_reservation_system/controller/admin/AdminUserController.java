@@ -29,7 +29,6 @@ public class AdminUserController {
 
     @PostMapping("/save-user")
     public String adminSaveUser(@ModelAttribute("newUser") UserDTO userDTO, Model model) {
-
         try{ // Валидация
             userService.save(userDTO);
         } catch (ValidationException e){

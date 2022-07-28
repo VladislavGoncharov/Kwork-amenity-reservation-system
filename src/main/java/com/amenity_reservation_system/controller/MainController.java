@@ -6,6 +6,7 @@ import com.amenity_reservation_system.dto.UserDTO;
 import com.amenity_reservation_system.entity.BookingTimeEnum;
 import com.amenity_reservation_system.entity.Reservation;
 import com.amenity_reservation_system.entity.User;
+import com.amenity_reservation_system.mapper.UserMapper;
 import com.amenity_reservation_system.service.AmenityTypeService;
 import com.amenity_reservation_system.service.ReservationService;
 import com.amenity_reservation_system.service.UserService;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Controller
 public class MainController {
+    private final UserMapper MAPPER = UserMapper.MAPPER;
 
     private final UserService userService;
     private final AmenityTypeService amenityTypeService;
@@ -34,7 +36,7 @@ public class MainController {
 
     @GetMapping("/")
     public String mainPage(Model model, Principal principal) {
-        model.addAttribute("user", new UserDTO(userService.findFirstByUsername(principal.getName())));
+        model.addAttribute("user", MAPPER.fromUser(userService.findFirstByUsername(principal.getName())));
         model.addAttribute("allAmenityType", amenityTypeService.findAll());
         return "main";
 

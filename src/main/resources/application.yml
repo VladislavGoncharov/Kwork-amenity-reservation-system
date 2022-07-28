@@ -30,6 +30,17 @@ spring:
     multipart:
       max-file-size: 2MB
       max-request-size: 5MB
-
+  #CheckEmail
+  mail:
+    host: mail.gmx.com
+    port: 587
+    username: aqua.aqua@gmx.com
+    password: adminAqua
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+           enable: true
 springdoc:
   pathsToMatch: /api/**

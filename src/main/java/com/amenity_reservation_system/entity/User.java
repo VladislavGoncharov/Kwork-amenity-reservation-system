@@ -33,9 +33,11 @@ public class User {
     private OffsetDateTime dateCreated;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private OffsetDateTime lastUpdated;
-
+    private boolean checkIn;
+    private String email;
     @PrePersist
     public void prePersist() {
+        checkIn = false;
         dateCreated = OffsetDateTime.now();
         lastUpdated = dateCreated;
     }
