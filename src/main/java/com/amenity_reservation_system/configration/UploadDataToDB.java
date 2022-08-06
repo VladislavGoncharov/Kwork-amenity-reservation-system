@@ -30,20 +30,22 @@ public class UploadDataToDB {
                                       ReservationRepository reservationRepository) {
         return (args) -> {
             userRepository.save(User.builder()
-                    .username("vlad")
-                    .password(passwordEncoder.encode("12345"))
-                    .fullName("Vlad Goncharov")
-                    .build());
-            userRepository.save(User.builder()
+                    .id(1L)
                     .username("admin")
                     .password(passwordEncoder.encode("admin753"))
                     .fullName("Main Supervisor")
+                    .build());
+            userRepository.save(User.builder()
+                    .username("vlad")
+                    .password(passwordEncoder.encode("12345"))
+                    .fullName("Vlad Goncharov")
                     .build());
 
             amenityTypeRepository.save(AmenityType.builder()
                     .amenityName("GYM")
                     .capacity(20)
                     .urlPhoto(urlDefaultPhoto)
+                    .apiTemperature("http://amenity.hopto.org:8086/query?db=telegraf&epoch=ms&q=SELECT+value/1000-30+FROM+cpu_temperature+limit+1")
                     .build());
             amenityTypeRepository.save(AmenityType.builder()
                     .amenityName("POOL")

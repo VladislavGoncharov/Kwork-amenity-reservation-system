@@ -19,10 +19,10 @@ public class PhotoStorageCloudinaryService {
     }
 
     public String getUrlPhoto(MultipartFile photo) throws IOException {
-        System.out.println(photo.getContentType());
+
         if (!Objects.equals(photo.getContentType(), "image/png") &&
                 !Objects.equals(photo.getContentType(), "image/jpeg"))
-            throw new IOException("it is necessary to use a photo with the PNG or JPG extension");
+            throw new IOException("It is necessary to use a photo with the PNG or JPG extension");
 
         File file = new File("my_image.jpg");
 

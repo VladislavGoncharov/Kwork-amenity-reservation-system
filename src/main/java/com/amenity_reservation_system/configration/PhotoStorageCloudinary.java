@@ -12,7 +12,7 @@ import java.util.Map;
 @Configuration
 public class PhotoStorageCloudinary {
 
-    private String urlDefaultPhoto;
+    private String urlDefaultPhoto; 
 
     @Bean
     public Cloudinary cloudinary() {

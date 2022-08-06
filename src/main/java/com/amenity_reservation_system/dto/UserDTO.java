@@ -1,7 +1,5 @@
 package com.amenity_reservation_system.dto;
 
-import com.amenity_reservation_system.entity.Reservation;
-import com.amenity_reservation_system.entity.User;
 import lombok.*;
 
 import java.time.OffsetDateTime;

@@ -8,7 +8,7 @@
 <body>
 <div>
     <div th:insert="fragments/nav :: nav"></div>
-    <div class="container" style="padding-top: 5vh; display: flex; flex-direction: column; align-items: center;">
+    <div class="container" style="padding-top: 3vh; display: flex; flex-direction: column; align-items: center;">
         <h3>Welcome <span th:text=" ${user.fullName}"></span></h3>
         <br>
         <div class="card-deck">
@@ -16,7 +16,9 @@
                     <img class="card-img-top" th:src="${amenityType.urlPhoto}" th:alt="${amenityType.amenityName}">
                     <div class="card-body text-center">
                         <h5 class="card-title" th:text="${amenityType.amenityName}"></h5>
-                        <p class="card-text" th:text="${'Capacity: ' + amenityType.capacity}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <p class="card-text" th:if="${amenityType.temperature != null}"
+                           th:text="${'Temperature: ' + amenityType.temperature}"></p>
+                        <p class="card-text" th:text="${'Capacity: ' + amenityType.capacity}"></p>
                         <a th:href="@{/book-{amenityType} (amenityType=${amenityType.amenityName})}" class="btn btn-primary">Reserve</a>
                     </div>
                 </div>

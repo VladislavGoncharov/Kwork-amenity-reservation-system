@@ -1,8 +1,13 @@
 package com.amenity_reservation_system.service;
 
 import com.amenity_reservation_system.dao.AmenityTypeRepository;
+import com.amenity_reservation_system.dao.ReservationRepository;
+import com.amenity_reservation_system.dao.UserRepository;
 import com.amenity_reservation_system.dto.AmenityTypeDTO;
 import com.amenity_reservation_system.entity.AmenityType;
+import com.amenity_reservation_system.entity.Reservation;
+import com.amenity_reservation_system.entity.User;
+import com.amenity_reservation_system.mapper.AmenityTypeMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,32 +16,30 @@ import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class AmenityTypeServiceImpl implements AmenityTypeService {
 
+    private final AmenityTypeMapper MAPPER = AmenityTypeMapper.MAPPER;
+
     private final AmenityTypeRepository amenityTypeRepository;
+    private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
     private final PhotoStorageCloudinaryService photoStorageCloudinaryService;
     private final String urlDefaultPhoto;
 
-    public AmenityTypeServiceImpl(AmenityTypeRepository amenityTypeRepository, PhotoStorageCloudinaryService photoStorageCloudinaryService, String urlDefaultPhoto) {
+    public AmenityTypeServiceImpl(AmenityTypeRepository amenityTypeRepository, UserRepository userRepository, ReservationRepository reservationRepository, PhotoStorageCloudinaryService photoStorageCloudinaryService, String urlDefaultPhoto) {
         this.amenityTypeRepository = amenityTypeRepository;
+        this.userRepository = userRepository;
+        this.reservationRepository = reservationRepository;
         this.photoStorageCloudinaryService = photoStorageCloudinaryService;
         this.urlDefaultPhoto = urlDefaultPhoto;
     }
 
     @Override
     public List<AmenityTypeDTO> findAll() {
-        return amenityTypeRepository.findAll().stream()
-                .map(amenityType -> AmenityTypeDTO.builder()
-                        .id(amenityType.getId())
-                        .amenityName(amenityType.getAmenityName())
-                        .capacity(amenityType.getCapacity())
-                        .urlPhoto(amenityType.getUrlPhoto())
-                        .build())
-                .collect(Collectors.toList());
+        return MAPPER.fromAmenityTypeList(amenityTypeRepository.findAll());
     }
 
     @Override
@@ -59,7 +62,6 @@ public class AmenityTypeServiceImpl implements AmenityTypeService {
         if (amenityTypeDTO.getId() != null) { // Валидация названия при изменении
             if (checkUsername(amenityTypeDTO.getAmenityName(), amenityTypeDTO.getId())) {
                 throw new ValidationException("A amenity with this name already exists");
-
             }
         } else if (checkUsername(amenityTypeDTO.getAmenityName())) // При создании
             throw new ValidationException("A amenity with this name already exists");
@@ -67,28 +69,35 @@ public class AmenityTypeServiceImpl implements AmenityTypeService {
         if (amenityTypeDTO.getCapacity() <= 0)
             throw new ValidationException("The capacity can't be that small");
 
+        if (amenityTypeDTO.getApiTemperature().isEmpty())
+            amenityTypeDTO.setTemperature(null);
+
         amenityTypeRepository.save(AmenityType.builder()
                 .id(amenityTypeDTO.getId())
                 .amenityName(amenityTypeDTO.getAmenityName())
                 .capacity(amenityTypeDTO.getCapacity())
                 .urlPhoto(photoUrl)
+                .apiTemperature(amenityTypeDTO.getApiTemperature())
                 .build());
     }
 
     @Override
     public void deleteById(Long id) {
+        List<Reservation> reservations = reservationRepository.getAllByAmenityType(amenityTypeRepository.getOne(id));
+        reservations.forEach(reservation -> {
+            User user = reservation.getUser();
+            user.getReservations().remove(reservation);
+            userRepository.save(user);
+        });
+        reservationRepository.deleteAll(reservations);
         amenityTypeRepository.deleteById(id);
+
     }
 
     @Override
     public AmenityTypeDTO getById(Long id) {
-        AmenityType amenityType = amenityTypeRepository.getOne(id);
-        return AmenityTypeDTO.builder()
-                .id(amenityType.getId())
-                .amenityName(amenityType.getAmenityName())
-                .capacity(amenityType.getCapacity())
-                .urlPhoto(amenityType.getUrlPhoto())
-                .build();
+        return MAPPER.fromAmenityType(amenityTypeRepository.getOne(id));
+
     }
 
     @Override

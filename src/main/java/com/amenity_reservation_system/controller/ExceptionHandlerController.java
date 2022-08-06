@@ -24,7 +24,6 @@ public class ExceptionHandlerController {
         model.addAttribute("newAmenityType", new AmenityTypeDTO());
         model.addAttribute("allAmenityType", amenityTypeService.findAll());
         return "admin-all-amenity";
-
     }
 
 }

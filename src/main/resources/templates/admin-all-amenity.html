@@ -9,13 +9,13 @@
 
 <div>
     <div th:insert="fragments/nav :: nav"></div>
-    <div class="container" style="padding-top: 10vh; display: flex; flex-direction: column; align-items: center;">
+    <div class="container" style="padding-top: 3vh; display: flex; flex-direction: column; align-items: center;">
         <form action="#" th:action="@{/admin/amenities/save-amenity}" th:object="${newAmenityType}" method="post"
               enctype="multipart/form-data">
             <input type="hidden" th:field="*{id}">
             <input type="hidden" th:field="*{urlPhoto}">
             <table class="table text-center">
-                <thead>
+                <tbody>
                 <tr th:if="${error!=null}">
                     <th class="alert alert-danger" role="alert" th:text="${error}" colspan="2"></th>
                 </tr>
@@ -42,6 +42,14 @@
                 </tr>
                 <tr>
                     <th>
+                        Api temperature
+                    </th>
+                    <th>
+                        <input type="text" th:field="*{apiTemperature}">
+                    </th>
+                </tr>
+                <tr>
+                    <th>
                         Photo
                     </th>
                     <th>
@@ -56,7 +64,7 @@
                         <button class="btn btn-primary" type="submit">Save</button>
                     </th>
                 </tr>
-                </thead>
+                </tbody>
             </table>
         </form>
         <table class="table text-center">
@@ -66,6 +74,7 @@
                 <th scope="col">Name amenity</th>
                 <th scope="col">Capacity</th>
                 <th scope="col">Image</th>
+                <th scope="col">Temperature</th>
                 <th scope="col">Option</th>
             </tr>
             </thead>
@@ -75,6 +84,10 @@
                 <td th:text="${amenity.amenityName}"></td>
                 <td th:text="${amenity.capacity}"></td>
                 <td><img style="width: 4rem" th:src="${amenity.urlPhoto}" th:alt="${amenity.amenityName}"></td>
+                <th:block th:switch="${amenity.temperature}">
+                    <td th:case="null" th:text="${'Problem with api'}"></td>
+                    <td th:case="*" th:text="${amenity.temperature}"></td>
+                </th:block>
                 <td>
                     <button class="btn btn-warning" type="button"
                             th:onclick="|window.location.href='/admin/amenities/update-amenity-${amenity.getId}'|"

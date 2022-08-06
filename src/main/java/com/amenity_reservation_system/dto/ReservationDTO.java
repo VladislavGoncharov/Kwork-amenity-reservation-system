@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class ReservationDTO {
 
     private Long id;
@@ -26,11 +27,12 @@ public class ReservationDTO {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
     private User user;
+    private String username;
     private AmenityType amenityType;
 
 
-    public ReservationDTO(User user, AmenityType amenityType) {
-        this.user = user;
+    public ReservationDTO(String username, AmenityType amenityType) {
+        this.username = username;
         this.amenityType = amenityType;
     }
 

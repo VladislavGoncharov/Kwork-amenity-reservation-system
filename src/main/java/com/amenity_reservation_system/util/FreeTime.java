@@ -2,8 +2,8 @@ package com.amenity_reservation_system.util;
 
 import com.amenity_reservation_system.dto.ChooseDateAndTime;
 import com.amenity_reservation_system.dto.ReservationDTO;
-import com.amenity_reservation_system.entity.AmenityType;
 import com.amenity_reservation_system.entity.BookingTimeEnum;
+import com.amenity_reservation_system.entity.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,18 +15,18 @@ public class FreeTime { // Вспомогательный класс, где п�
 
     // Используется при изменении резервирования, чтобы освободилось изначально зарезервированное время
     public static List<List<BookingTimeEnum>> updateReservation(List<ReservationDTO> reservation
-            , AmenityType amenityType, Long updateReservationId){
+            , Reservation updateReservation) {
         ReservationDTO deleteUpdateReservation
                 = reservation.stream()
-                .filter(reservationDTO -> Objects.equals(reservationDTO.getId(), updateReservationId))
+                .filter(reservationDTO -> Objects.equals(reservationDTO.getId(), updateReservation.getId()))
                 .findFirst().get();
 
         reservation.remove(deleteUpdateReservation);
 
-        return sortByDate(reservation,amenityType);
+        return sortByDate(reservation, updateReservation.getAmenityType().getCapacity());
     }
 
-    public static List<List<BookingTimeEnum>> sortByDate(List<ReservationDTO> reservation, AmenityType amenityType) {
+    public static List<List<BookingTimeEnum>> sortByDate(List<ReservationDTO> reservation, int capacityAmenityType) {
         List<List<BookingTimeEnum>> freeTimeWeekList = new ArrayList<>();
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -45,24 +45,20 @@ public class FreeTime { // Вспомогательный класс, где п�
                     .filter(res -> res.getReservationDate().isEqual(today))
                     .collect(Collectors.toList());
 
-            freeTimeWeekList.add(getFreeTime(currentDate,amenityType));
+            freeTimeWeekList.add(getFreeTime(currentDate, capacityAmenityType));
         }
 
         return freeTimeWeekList;
     }
 
     // Высчитываем свободное время на один день
-    public static List<BookingTimeEnum> getFreeTime(List<ReservationDTO> reservation, AmenityType amenityType) {
-        // Беру все резервации и отфильтровываю по Удобству
-        reservation = reservation.stream()
-                .filter(res -> res.getAmenityType().getAmenityName().equals(amenityType.getAmenityName()))
-                .collect(Collectors.toList());
+    public static List<BookingTimeEnum> getFreeTime(List<ReservationDTO> reservation, int capacityAmenityType) {
 
-        // Создаю Лист содержащий Множества(Set) всего времениq
+        // Создаю Лист содержащий Множества(Set) всего времени
         List<Set<BookingTimeEnum>> allTimeList = new ArrayList<>();
 
         // И добавляю Множества времени в лист согласно Вместительности Удобства
-        for (int i = 0; i < amenityType.getCapacity(); i++) {
+        for (int i = 0; i < capacityAmenityType; i++) {
             allTimeList.add(new HashSet<>(List.of(BookingTimeEnum.values())));
         }
         // У меня создается Лист содержащий временные интервалы от 08:00 до 20:00 по количеству Вместительности Удобства
@@ -116,7 +112,7 @@ public class FreeTime { // Вспомогательный класс, где п�
         LocalDate now = LocalDate.now();
 
         int i = 0;
-        while(!now.isEqual(specificDate)){
+        while (!now.isEqual(specificDate)) {
             i++;
             now = now.plusDays(1);
         }

@@ -22,5 +22,6 @@ public class AmenityType {
     private String amenityName;
     private int capacity;
     private String urlPhoto;
+    private String apiTemperature;
 
 }

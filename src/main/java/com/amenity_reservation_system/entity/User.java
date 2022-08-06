@@ -35,6 +35,9 @@ public class User {
     private OffsetDateTime lastUpdated;
     private boolean checkIn;
     private String email;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Reservation> reservations = new ArrayList<>();
+
     @PrePersist
     public void prePersist() {
         checkIn = false;
@@ -46,9 +49,6 @@ public class User {
     public void preUpdate() {
         lastUpdated = OffsetDateTime.now();
     }
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Reservation> reservations = new ArrayList<>();
 
     public User(String fullName, String username, String passwordHash) {
         this.fullName = fullName;

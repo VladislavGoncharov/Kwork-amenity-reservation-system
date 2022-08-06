@@ -1,6 +1,5 @@
 package com.amenity_reservation_system.controller.admin;
 
-
 import com.amenity_reservation_system.dto.AmenityTypeDTO;
 import com.amenity_reservation_system.service.AmenityTypeService;
 import org.springframework.stereotype.Controller;
@@ -34,21 +33,16 @@ public class AdminAmenityController {
     @PostMapping("/save-amenity")
     public String adminSaveAmenityType(@ModelAttribute AmenityTypeDTO amenityTypeDTO, Model model,
                                        @RequestParam("photoAmenity") MultipartFile photo) {
-
         try { // валидация
             amenityTypeService.save(amenityTypeDTO, photo);
         } catch (IOException | ValidationException e) {
-            return addModel(amenityTypeDTO, e.getMessage(), model);
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("newAmenityType", amenityTypeDTO);
+            model.addAttribute("allAmenityType", amenityTypeService.findAll());
+            return "admin-all-amenity";
         }
 
         return "redirect:/admin/amenities";
-    }
-
-    private String addModel(AmenityTypeDTO amenityTypeDTO, String textError, Model model) {
-        model.addAttribute("error", textError);
-        model.addAttribute("newAmenityType", amenityTypeDTO);
-        model.addAttribute("allAmenityType", amenityTypeService.findAll());
-        return "admin-all-amenity";
     }
 
     @RequestMapping("/update-amenity-{id}")

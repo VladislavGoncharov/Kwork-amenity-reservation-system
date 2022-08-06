@@ -36,19 +36,6 @@ public class EmailSenderService implements Runnable{
                         reservation.getStartTime() + " - " + reservation.getEndTime() + "\n" +
                         "Thank you!\n" +
                         "---------\n");
-        System.out.println( "--------\n" +
-                "Amenity Reservation System Details:\n" +
-                "Hi " + reservation.getUser().getFullName() + ",\n" +
-                "This is a confirmation of your booking\n" +
-                "Who:\n" +
-                reservation.getUser().getUsername() + "\n" +
-                "What:\n" +
-                reservation.getAmenityType().getAmenityName() + "\n" +
-                "When:\n" +
-                reservation.getReservationDate() + "\n" +
-                reservation.getStartTime() + " - " + reservation.getEndTime() + "\n" +
-                "Thank you!\n" +
-                "---------\n");
 
 
         mailSender.send(mailMessage);

@@ -1,7 +1,6 @@
 package com.amenity_reservation_system.mapper;
 
 import com.amenity_reservation_system.dto.ReservationDTO;
-import com.amenity_reservation_system.entity.AmenityType;
 import com.amenity_reservation_system.entity.Reservation;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -27,13 +26,13 @@ public interface ReservationMapper {
                 .collect(Collectors.toList());
     }
 
-    default Reservation toReservation(ReservationDTO reservationDTO, AmenityType amenityType) {
+    default Reservation toReservation(ReservationDTO reservationDTO) {
         return Reservation.builder()
                 .id(reservationDTO.getId())
                 .reservationDate(reservationDTO.getReservationDate())
                 .startTime(reservationDTO.getStartTime())
                 .endTime(reservationDTO.getEndTime())
-                .amenityType(amenityType)
+                .amenityType(reservationDTO.getAmenityType())
                 .user(reservationDTO.getUser())
                 .build();
     }

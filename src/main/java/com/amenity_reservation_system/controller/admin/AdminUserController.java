@@ -20,29 +20,23 @@ public class AdminUserController {
 
     @GetMapping
     public String adminUsersPage(Model model) {
-
         model.addAttribute("newUser", new UserDTO());
         model.addAttribute("allUsers", userService.findAll());
-
         return "admin-all-user";
     }
 
     @PostMapping("/save-user")
     public String adminSaveUser(@ModelAttribute("newUser") UserDTO userDTO, Model model) {
-        try{ // Валидация
+        try { // Валидация
             userService.save(userDTO);
-        } catch (ValidationException e){
-            return addModel(userDTO,e.getMessage(), model);
+        } catch (ValidationException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("newUser", userDTO);
+            model.addAttribute("allUsers", userService.findAll());
+            return "admin-all-user";
         }
 
         return "redirect:/admin/users";
-    }
-
-    private String addModel(UserDTO userDTO, String textError, Model model) {
-        model.addAttribute("error", textError);
-        model.addAttribute("newUser", userDTO);
-        model.addAttribute("allUsers", userService.findAll());
-        return "admin-all-user";
     }
 
     @RequestMapping("/update-user-{id}")

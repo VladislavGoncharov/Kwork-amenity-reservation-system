@@ -7,7 +7,7 @@
 </head>
 <body>
 <div th:insert="fragments/nav :: nav"></div>
-<div class="container" style="padding-top: 10vh; display: flex; flex-direction: column; align-items: center;">
+<div class="container" style="padding-top: 3vh; display: flex; flex-direction: column; align-items: center;">
     <div class="modal-body">
         <p class="form-group alert alert-danger text-center" role="alert" th:if="${error}" th:text="${error}"></p>
         <!--/*@thymesVar id="reservationDTO" type="com.amenity_reservation_system.dto.ReservationDTO"*/-->
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <!--/*@thymesVar id="e" type="com.amenity_reservation_system.entity.BookingTimeEnum"*/-->
-            <div th:each="currentDate,state : ${weekList}">
+            <div th:each="currentDate,state : ${#httpSession.getAttribute('freeTime')}">
                 <div th:id="${'time_block_input_' + state.count}" style="display: block">
                     <div class="form-group row">
                         <label for="start-time" class="col-2 col-form-label">From</label>

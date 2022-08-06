@@ -3,9 +3,8 @@ package com.amenity_reservation_system.controller;
 import com.amenity_reservation_system.dto.ChooseDateAndTime;
 import com.amenity_reservation_system.dto.ReservationDTO;
 import com.amenity_reservation_system.dto.UserDTO;
-import com.amenity_reservation_system.entity.BookingTimeEnum;
+import com.amenity_reservation_system.entity.AmenityType;
 import com.amenity_reservation_system.entity.Reservation;
-import com.amenity_reservation_system.entity.User;
 import com.amenity_reservation_system.mapper.UserMapper;
 import com.amenity_reservation_system.service.AmenityTypeService;
 import com.amenity_reservation_system.service.ReservationService;
@@ -15,9 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 public class MainController {
@@ -36,52 +34,46 @@ public class MainController {
 
     @GetMapping("/")
     public String mainPage(Model model, Principal principal) {
-        model.addAttribute("user", MAPPER.fromUser(userService.findFirstByUsername(principal.getName())));
+        model.addAttribute("user", userService.findFirstByUsername(principal.getName()));
         model.addAttribute("allAmenityType", amenityTypeService.findAll());
         return "main";
 
     }
 
     @GetMapping("/book-{amenityName}")
-    public String bookAmenities(@PathVariable String amenityName, Model model, Principal principal,
-                                HttpServletRequest httpServletRequest) {
-        User user = userService.findFirstByUsername(principal.getName());
+    public String bookAmenities(@PathVariable String amenityName, Model model, Principal principal, HttpSession httpSession) {
+        UserDTO userDTO = userService.findFirstByUsername(principal.getName());
+        AmenityType amenityType = amenityTypeService.findFirstByAmenityName(amenityName);
 
-        List<List<BookingTimeEnum>> freeTime = FreeTime.sortByDate(reservationService.findAll(),
-                amenityTypeService.findFirstByAmenityName(amenityName));
-
-        model.addAttribute("weekList", freeTime);
-        model.addAttribute("userFullName", user.getFullName());
         model.addAttribute("dateAndTime", new ChooseDateAndTime());
 
-        httpServletRequest.getSession().setAttribute("freeTime", freeTime);
-        httpServletRequest.getSession().setAttribute("reservationDTO",
-                new ReservationDTO(user, amenityTypeService.findFirstByAmenityName(amenityName)));
+        httpSession.setAttribute("freeTime",
+                FreeTime.sortByDate(reservationService.findAll(), amenityType.getCapacity()));
+        httpSession.setAttribute("reservationDTO",
+                new ReservationDTO(userDTO.getUsername(), amenityType));
         return "choose-time";
 
     }
 
     @GetMapping("/book-{amenityName}-error")
-    public String bookAmenitiesError(@PathVariable String amenityName, Model model, Principal principal,
-                                     HttpServletRequest httpServletRequest) {
+    public String bookAmenitiesError(@PathVariable String amenityName, Model model, Principal principal
+            , HttpSession httpSession) {
 
-        ReservationDTO reservationDTO = (ReservationDTO) httpServletRequest.getSession().getAttribute("reservationDTO");
+        ReservationDTO reservationDTO = (ReservationDTO) httpSession.getAttribute("reservationDTO");
         model.addAttribute("error", "This time is busy, try again");
 
-        if (reservationDTO.getId() != null) return updateReservation(reservationDTO.getId(), model, httpServletRequest);
-        else return bookAmenities(amenityName, model, principal, httpServletRequest);
+        if (reservationDTO.getId() != null) return updateReservation(reservationDTO.getId(), model, httpSession);
+        else return bookAmenities(amenityName, model, principal, httpSession);
     }
 
 
     @PostMapping("/reserve-time")
-    public String reserveTime(@ModelAttribute("dateAndTime") ChooseDateAndTime chooseDateAndTime,
-                              HttpServletRequest httpServletRequest) {
+    public String reserveTime(@ModelAttribute("dateAndTime") ChooseDateAndTime chooseDateAndTime, HttpSession httpSession) {
         chooseDateAndTime.checkTime();
-        ReservationDTO reservationDTO = (ReservationDTO) httpServletRequest.getSession().getAttribute("reservationDTO");
+        ReservationDTO reservationDTO = (ReservationDTO) httpSession.getAttribute("reservationDTO");
 
-        if (FreeTime.checkingForAvailableSeats(httpServletRequest.getSession().getAttribute("freeTime"), chooseDateAndTime)) {
+        if (FreeTime.checkingForAvailableSeats(httpSession.getAttribute("freeTime"), chooseDateAndTime))
             return "redirect:/book-" + reservationDTO.getAmenityType().getAmenityName() + "-error";
-        }
 
         if (reservationDTO.getId() != null) reservationService.update(reservationDTO.getId(), chooseDateAndTime);
         else reservationService.save(reservationDTO, chooseDateAndTime);
@@ -96,18 +88,13 @@ public class MainController {
     }
 
     @RequestMapping("/update-{id}")
-    public String updateReservation(@PathVariable Long id, Model model, HttpServletRequest httpServletRequest) {
+    public String updateReservation(@PathVariable Long id, Model model, HttpSession httpSession) {
         Reservation reservation = reservationService.findById(id);
 
-        List<List<BookingTimeEnum>> freeTime =
-                FreeTime.updateReservation(reservationService.findAll(), reservation.getAmenityType(), id);
-
-        model.addAttribute("weekList", freeTime);
-        model.addAttribute("userFullName", reservation.getUser().getFullName());
         model.addAttribute("dateAndTime", new ChooseDateAndTime());
-
-        httpServletRequest.getSession().setAttribute("freeTime", freeTime);
-        httpServletRequest.getSession().setAttribute("reservationDTO",
+        httpSession.setAttribute("freeTime",
+                FreeTime.updateReservation(reservationService.getAllByAmenityType(reservation.getAmenityType()), reservation));
+        httpSession.setAttribute("reservationDTO",
                 new ReservationDTO(reservation.getId(), reservation.getAmenityType()));
         return "choose-time";
     }

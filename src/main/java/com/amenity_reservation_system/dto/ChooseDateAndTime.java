@@ -21,13 +21,13 @@ public class ChooseDateAndTime {
     private String startTime;
     private String endTime;
 
-    public void checkTime(){
-        int[] startTimeArray = conversionToArrayInt(startTime);
+    public void checkTime() {
+        int[] startTimeArray = conversionToArrayInt(startTime); //  08:00
         int[] endTimeArray = conversionToArrayInt(endTime);
-        startLocalTime = LocalTime.of(startTimeArray[0],startTimeArray[1]);
-        endLocalTime = LocalTime.of(endTimeArray[0],endTimeArray[1]);
+        startLocalTime = LocalTime.of(startTimeArray[0], startTimeArray[1]);
+        endLocalTime = LocalTime.of(endTimeArray[0], endTimeArray[1]);
 
-        if (startLocalTime.isAfter(endLocalTime)){
+        if (startLocalTime.isAfter(endLocalTime)) {
             LocalTime time = endLocalTime;
             this.endLocalTime = this.startLocalTime;
             this.startLocalTime = time;
@@ -35,7 +35,7 @@ public class ChooseDateAndTime {
     }
 
     private int[] conversionToArrayInt(String time) {
-        time = time.replaceAll(",","");
+        time = time.replaceAll(",", "");
         String[] timeArray = time.split(":");
         return Arrays.stream(timeArray)
                 .mapToInt(Integer::parseInt)
