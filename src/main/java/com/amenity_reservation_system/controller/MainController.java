@@ -18,8 +18,8 @@ import javax.servlet.http.HttpSession;
 import java.security.Principal;
 
 @Controller
+@RequestMapping("/main")
 public class MainController {
-    private final UserMapper MAPPER = UserMapper.MAPPER;
 
     private final UserService userService;
     private final AmenityTypeService amenityTypeService;
@@ -32,7 +32,7 @@ public class MainController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public String mainPage(Model model, Principal principal) {
         model.addAttribute("user", userService.findFirstByUsername(principal.getName()));
         model.addAttribute("allAmenityType", amenityTypeService.findAll());
@@ -73,18 +73,18 @@ public class MainController {
         ReservationDTO reservationDTO = (ReservationDTO) httpSession.getAttribute("reservationDTO");
 
         if (FreeTime.checkingForAvailableSeats(httpSession.getAttribute("freeTime"), chooseDateAndTime))
-            return "redirect:/book-" + reservationDTO.getAmenityType().getAmenityName() + "-error";
+            return "redirect:/main/book-" + reservationDTO.getAmenityType().getAmenityName() + "-error";
 
         if (reservationDTO.getId() != null) reservationService.update(reservationDTO.getId(), chooseDateAndTime);
         else reservationService.save(reservationDTO, chooseDateAndTime);
 
-        return "redirect:/";
+        return "redirect:/main";
     }
 
     @RequestMapping("/delete-{id}")
     public String deleteReservation(@PathVariable Long id) {
         reservationService.deleteById(id);
-        return "redirect:/";
+        return "redirect:/main";
     }
 
     @RequestMapping("/update-{id}")

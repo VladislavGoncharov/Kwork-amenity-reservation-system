@@ -11,7 +11,7 @@
     <div class="modal-body">
         <p class="form-group alert alert-danger text-center" role="alert" th:if="${error}" th:text="${error}"></p>
         <!--/*@thymesVar id="reservationDTO" type="com.amenity_reservation_system.dto.ReservationDTO"*/-->
-        <form action="#" th:action="@{/reserve-time}" th:object="${dateAndTime}" method="post">
+        <form action="#" th:action="@{/main/reserve-time}" th:object="${dateAndTime}" method="post">
             <div class="modal-header form-group text-center">Amenities are available from 8 am to 8 pm</div>
             <div class="form-group row">
                 <label for="start-date" class="col-2 col-form-label">Date</label>

@@ -1,6 +1,5 @@
 package com.amenity_reservation_system.service;
 
-import com.amenity_reservation_system.dao.AmenityTypeRepository;
 import com.amenity_reservation_system.dao.ReservationRepository;
 import com.amenity_reservation_system.dao.UserRepository;
 import com.amenity_reservation_system.dto.ChooseDateAndTime;
@@ -27,13 +26,11 @@ public class ReservationServiceImpl implements ReservationService {
     private final JavaMailSender mailSender;
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
-    private final AmenityTypeRepository amenityTypeRepository;
 
-    public ReservationServiceImpl(JavaMailSender mailSender, ReservationRepository reservationRepository, UserRepository userRepository, AmenityTypeRepository amenityTypeRepository) {
+    public ReservationServiceImpl(JavaMailSender mailSender, ReservationRepository reservationRepository, UserRepository userRepository) {
         this.mailSender = mailSender;
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
-        this.amenityTypeRepository = amenityTypeRepository;
     }
 
     @Override
